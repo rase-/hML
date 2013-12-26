@@ -8,6 +8,9 @@ module MachineLearning.Regression
 
 import Numeric.LinearAlgebra
 
+-- TODO: sort of unnecessary to handle all the stuff as lists... why not just
+-- have then as matrices to begin with?
+
 newtype Parameters = Parameters [Double] deriving (Show, Eq)
 
 -- For now only support for double values
