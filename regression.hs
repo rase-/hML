@@ -31,7 +31,6 @@ findParameters (TestSet x) _ = error "You can't find parameters with label-less 
 findParameters (TrainingSet x y) NormalEquation = Parameters $ L.multiply (L.pinv $ L.multiply (L.ctrans x) x) (L.multiply (L.ctrans x) y)
 findParameters d GradientDescent = Parameters $ fromList [[1,2,3]] -- TODO
 
--- Deprecated... find out how to map with row of matrix
 run :: Dataset -> Parameters -> Results
 run (TrainingSet x y) _ = error "You should not run experiments with training data" -- Actually maybe you should be able
 run (TestSet ts) p = map (runIndividual p) rows
