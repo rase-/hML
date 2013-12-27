@@ -4,13 +4,10 @@ module MachineLearning.Regression
 , ParamFindStrategy(..)
 , findParameters
 , fromList
---, run
+, run
 ) where
 
 import qualified Numeric.LinearAlgebra as L
-
--- TODO: sort of unnecessary to handle all the stuff as lists... why not just
--- have then as matrices to begin with?
 
 newtype Parameters = Parameters (L.Matrix Double) deriving (Show, Eq)
 
@@ -35,14 +32,19 @@ findParameters (TrainingSet x y) NormalEquation = Parameters $ L.multiply (L.pin
 findParameters d GradientDescent = Parameters $ fromList [[1,2,3]] -- TODO
 
 -- Deprecated... find out how to map with row of matrix
---run :: Dataset -> Parameters -> Results
---run (TrainingSet x y) _ = error "You should not run experiments with training data" -- Actually maybe you should be able
---run (TestSet ts) p = map (runIndividual p) ts
---
----- Running the experiment for an individual datapoint
---runIndividual :: Parameters -> [Double] -> Double
---runIndividual (Parameters p) row = undefined
+run :: Dataset -> Parameters -> Results
+run (TrainingSet x y) _ = error "You should not run experiments with training data" -- Actually maybe you should be able
+run (TestSet ts) p = map (runIndividual p) rows
+  where rows = L.toRows ts
+
+-- Running the experiment for an individual datapoint
+runIndividual :: Parameters -> L.Vector Double -> Double
+runIndividual (Parameters p) row = getVal $ (L.ctrans p) L.<> row
+  where getVal v = head $ L.toList v
 
 -- Just testing stuff out
 main = do putStrLn (show . Parameters $ fromList [[1, 2, 3, 4]])
-          putStrLn (show $ findParameters (TrainingSet (fromList [[1,2,3],[1,2,3],[2,2,3]]) (fromList [[1],[2],[3]])) NormalEquation)
+          let params = findParameters (TrainingSet (fromList [[1,2,3],[1,2,3],[2,2,3]]) (fromList [[1],[2],[3]])) NormalEquation
+          putStrLn $ show params
+          let results = run (TestSet $ fromList [[1,2,3],[1,2,3],[2,2,3]]) params
+          putStrLn $ show results
